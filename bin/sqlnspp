@@ -1,0 +1,119 @@
+#!/usr/bin/env perl
+# vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 textwidth=75 
+
+use 5.008000;
+use strict;
+use warnings;
+#use diagnostics;
+use utf8;
+
+our $VERSION = "0.0.1";
+
+use SQL::Beautify qw();
+use File::Basename qw(basename);
+
+if (grep { m/^(--help|-h|-\?)$/ } @ARGV) {
+    my $basename = basename $0;
+    print <<"END"; exit
+Usage:  $basename [-h] [-m] (file..)
+        $basename --help
+        $basename < query.sql
+
+Description:
+    -h, --help, -?
+        Print this message and exit
+    -m, --mysql
+        Try to optimize output for MySQL
+
+END
+}
+
+if (exists $ARGV[0] and $ARGV[0] =~ m/^(--mysql|-m)$/) {
+    shift @ARGV;
+    if (eval "require Mysql::PrettyPrinter") {
+        my $implementation = Mysql::PrettyPrinter->new;
+        $implementation->add_sql($_) or die $! while(<>);
+        print $implementation->format() or die $!;
+        exit;
+    }
+}
+
+my $implementation = SQL::Beautify->new;
+$implementation->add($_) or die $! while(<>);
+print $implementation->beautify or die $!;
+
+__END__
+=head1 NAME
+
+sqlnspp - SQL pretty printer
+
+=head1 SYNOPSIS
+
+    sqlnspp [-h] [-m] (file..)
+    sqlnspp --help
+
+=head1 DESCRIPTION
+
+The sqlnspp(1) tool is a very minimal SQL (not so) pretty printer with a
+commandline interface only. It will attempt to open and read each file
+specified when invoked (or from the standard input) and print a readable
+version of it's findings.
+
+=head2 Options
+
+Below please find a list of options recognized by sqlnspp(1):
+
+=over 
+
+=item -h, --help, -?
+
+Print a short usage hint and exit gracefully
+
+=item -m, --mysql
+
+Try to use Mysql::PrettyPrinter instead of SQL::Beautify
+
+=back
+
+=head2 Examples
+
+Below please find a few examples of invocations of sqlnspp(1) and their
+resulting output:
+
+    user@host:~$ echo "select * from information_schema.TABLES;" | sqlnspp
+    select
+        *
+    from
+        information_schema.TABLES;
+
+    user@host:~$ sqlnspp <<<"create view test_view as select 1;"
+    create view test_view as
+    select
+        1;
+
+=head1 DEPENDENCIES
+
+Beside Perl 5.8.0 (or later) itself, the following modules are used:
+
+=over
+
+=item L<File::Basename> (standard)
+
+=item L<Mysql::PrettyPrinter> (optional)
+
+=item L<SQL::Beautify>
+
+=back
+
+=head1 SEE ALSO
+
+The L<SQL::Beautify> module ships with a similar script: sqlbeautify
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2013 by Mathias J. Hennig
+
+This is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.0 or,
+at your option, any later version of Perl 5 you may have available.
+

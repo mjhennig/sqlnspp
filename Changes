@@ -1,0 +1,6 @@
+Revision history for sqlnspp(1):
+
+0.0.1  Sun Mar  3 02:34:11 2013
+	- original version; created by h2xs 1.23 with options
+		-AX -b 5.8.0 --skip-exporter -v 0.0.1 -n sqlnspp
+

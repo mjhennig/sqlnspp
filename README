@@ -1,0 +1,54 @@
+NAME
+    sqlnspp - SQL pretty printer
+
+SYNOPSIS
+        sqlnspp [-h] [-m] (file..)
+        sqlnspp --help
+
+DESCRIPTION
+    The sqlnspp(1) tool is a very minimal SQL (not so) pretty printer with a
+    commandline interface only. It will attempt to open and read each file
+    specified when invoked (or from the standard input) and print a readable
+    version of it's findings.
+
+  Options
+    Below please find a list of options recognized by sqlnspp(1):
+
+    -h, --help, -?
+        Print a short usage hint and exit gracefully
+
+    -m, --mysql
+        Try to use Mysql::PrettyPrinter instead of SQL::Beautify
+
+  Examples
+    Below please find a few examples of invocations of sqlnspp(1) and their
+    resulting output:
+
+        user@host:~$ echo "select * from information_schema.TABLES;" | sqlnspp
+        select
+            *
+        from
+            information_schema.TABLES;
+
+        user@host:~$ sqlnspp <<<"create view test_view as select 1;"
+        create view test_view as
+        select
+            1;
+
+DEPENDENCIES
+    Beside Perl 5.8.0 (or later) itself, the following modules are used:
+
+    File::Basename (standard)
+    Mysql::PrettyPrinter (optional)
+    SQL::Beautify
+
+SEE ALSO
+    The SQL::Beautify module ships with a similar script: sqlbeautify
+
+COPYRIGHT AND LICENSE
+    Copyright (C) 2013 by Mathias J. Hennig
+
+    This is free software; you can redistribute it and/or modify it under
+    the same terms as Perl itself, either Perl version 5.8.0 or, at your
+    option, any later version of Perl 5 you may have available.
+
